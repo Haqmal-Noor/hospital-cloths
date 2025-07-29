@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { orderAPI, userAPI } from '../../services/api';
-import { Users, ShoppingBag, Clock, CheckCircle, TrendingUp } from 'lucide-react';
-import OrdersTable from '../Orders/OrdersTable';
-import DashboardStats from '../Dashboard/DashboardStats';
+import React, { useState, useEffect } from "react";
+import { orderAPI, userAPI } from "../../services/api";
+import {
+  Users,
+  ShoppingBag,
+  Clock,
+  CheckCircle,
+  TrendingUp,
+} from "lucide-react";
+import OrdersTable from "../Orders/OrdersTable";
+import DashboardStats from "../Dashboard/DashboardStats";
 
 interface AdminDashboardProps {
   activeTab: string;
@@ -22,19 +28,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
     setLoading(true);
     try {
       const [ordersData, tailorsData, statsData] = await Promise.all([
-        orderAPI.getOrders({ 
-          status: activeTab === 'pending-orders' ? 'pending' : 'all',
-          limit: 20 
+        orderAPI.getOrders({
+          status: activeTab === "pending-orders" ? "pending" : "all",
+          limit: 20,
         }),
         userAPI.getTailors(),
-        userAPI.getDashboardStats()
+        userAPI.getDashboardStats(),
       ]);
 
       setOrders(ordersData.orders);
       setTailors(tailorsData.tailors);
       setStats(statsData.stats);
     } catch (error) {
-      console.error('Failed to fetch admin data:', error);
+      console.error("Failed to fetch admin data:", error);
     } finally {
       setLoading(false);
     }
@@ -45,53 +51,53 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
       await orderAPI.assignTailor(orderId, tailorId);
       fetchData(); // Refresh data
     } catch (error) {
-      console.error('Failed to assign tailor:', error);
+      console.error("Failed to assign tailor:", error);
     }
   };
 
   const renderDashboard = () => (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="hidden lg:flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
         <div className="text-sm text-gray-500">
           Welcome to the admin control panel
         </div>
       </div>
 
-      <DashboardStats 
+      <DashboardStats
         stats={[
-          { 
-            title: 'Total Orders', 
-            value: stats.totalOrders || 0, 
-            icon: ShoppingBag, 
-            color: 'blue',
-            trend: '+12%'
+          {
+            title: "Total Orders",
+            value: stats.totalOrders || 0,
+            icon: ShoppingBag,
+            color: "blue",
+            trend: "+12%",
           },
-          { 
-            title: 'Pending Orders', 
-            value: stats.pendingOrders || 0, 
-            icon: Clock, 
-            color: 'amber',
-            trend: '+3%'
+          {
+            title: "Pending Orders",
+            value: stats.pendingOrders || 0,
+            icon: Clock,
+            color: "amber",
+            trend: "+3%",
           },
-          { 
-            title: 'Completed Orders', 
-            value: stats.completedOrders || 0, 
-            icon: CheckCircle, 
-            color: 'green',
-            trend: '+8%'
+          {
+            title: "Completed Orders",
+            value: stats.completedOrders || 0,
+            icon: CheckCircle,
+            color: "green",
+            trend: "+8%",
           },
-          { 
-            title: 'Active Tailors', 
-            value: stats.totalTailors || 0, 
-            icon: Users, 
-            color: 'purple',
-            trend: '+2'
-          }
+          {
+            title: "Active Tailors",
+            value: stats.totalTailors || 0,
+            icon: Users,
+            color: "purple",
+            trend: "+2",
+          },
         ]}
       />
 
-      <div className="bg-white rounded-lg shadow">
+      {/* <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-medium text-gray-900">Recent Orders</h2>
         </div>
@@ -101,22 +107,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
           onAssignTailor={handleAssignTailor}
           showActions={true}
         />
-      </div>
+      </div> */}
     </div>
   );
 
   const renderAllOrders = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">All Orders</h1>
+        <h1 className="text-2xl font-bold text-gray-900">سفارشات مجموعی</h1>
         <div className="text-sm text-gray-500">
-          Total: {orders.length} orders
+          مجموع سفارشات: {orders.length}
         </div>
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        <OrdersTable 
-          orders={orders} 
+        <OrdersTable
+          orders={orders}
           tailors={tailors}
           onAssignTailor={handleAssignTailor}
           showActions={true}
@@ -128,15 +134,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
   const renderPendingOrders = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Pending Orders</h1>
+        <h1 className="text-2xl font-bold text-gray-900"></h1>
         <div className="text-sm text-gray-500">
           {orders.length} orders awaiting assignment
         </div>
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        <OrdersTable 
-          orders={orders} 
+        <OrdersTable
+          orders={orders}
           tailors={tailors}
           onAssignTailor={handleAssignTailor}
           showActions={true}
@@ -162,7 +168,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
                 <Users className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <h3 className="text-lg font-medium text-gray-900">{tailor.name}</h3>
+                <h3 className="text-lg font-medium text-gray-900">
+                  {tailor.name}
+                </h3>
                 <p className="text-sm text-gray-500">{tailor.email}</p>
                 {tailor.phone && (
                   <p className="text-sm text-gray-500">{tailor.phone}</p>
@@ -186,30 +194,45 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Order Status Distribution</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Order Status Distribution
+          </h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Pending</span>
-              <span className="text-sm font-medium">{stats.pendingOrders || 0}</span>
+              <span className="text-sm font-medium">
+                {stats.pendingOrders || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Completed</span>
-              <span className="text-sm font-medium">{stats.completedOrders || 0}</span>
+              <span className="text-sm font-medium">
+                {stats.completedOrders || 0}
+              </span>
             </div>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Performance Metrics</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Performance Metrics
+          </h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Active Tailors</span>
-              <span className="text-sm font-medium">{stats.totalTailors || 0}</span>
+              <span className="text-sm font-medium">
+                {stats.totalTailors || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Completion Rate</span>
               <span className="text-sm font-medium">
-                {stats.totalOrders ? Math.round((stats.completedOrders / stats.totalOrders) * 100) : 0}%
+                {stats.totalOrders
+                  ? Math.round(
+                      (stats.completedOrders / stats.totalOrders) * 100
+                    )
+                  : 0}
+                %
               </span>
             </div>
           </div>
@@ -227,15 +250,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
   }
 
   switch (activeTab) {
-    case 'dashboard':
+    case "dashboard":
       return renderDashboard();
-    case 'all-orders':
+    case "all-orders":
       return renderAllOrders();
-    case 'pending-orders':
+    case "pending-orders":
       return renderPendingOrders();
-    case 'tailors':
+    case "tailors":
       return renderTailors();
-    case 'analytics':
+    case "analytics":
       return renderAnalytics();
     default:
       return renderDashboard();
