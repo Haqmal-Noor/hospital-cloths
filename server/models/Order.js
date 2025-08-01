@@ -105,4 +105,6 @@ orderSchema.methods.calculateCommission = function() {
   return this.price * (this.visitorId.commissionRate / 100);
 };
 
-export default mongoose.model('Order', orderSchema);
+// export default mongoose.model('Order', orderSchema);
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
+export default Order;

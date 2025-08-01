@@ -7,6 +7,7 @@ import connectDB from "./config/database.js";
 import authRoutes from "./routes/auth.js";
 import orderRoutes from "./routes/orders.js";
 import userRoutes from "./routes/users.js";
+import statsRoutes from "./routes/stats.js";
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 
@@ -35,6 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/stats", statsRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -42,9 +44,9 @@ app.get("/api/health", (req, res) => {
 });
 
 // Error handling middleware
-app.all('*', (req, res, next)=>{
-  next(new AppError(`can't find ${req.originalUrl} on this server!`, 404))
-})
+app.all("*", (req, res, next) => {
+  next(new AppError(`can't find ${req.originalUrl} on this server!`, 404));
+});
 app.use(globalErrorHandler);
 // app.use((err, req, res, next) => {
 //   console.error(err.stack);
