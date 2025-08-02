@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { orderAPI, userAPI } from '../../services/api';
-import { Plus, ShoppingBag, Clock, CheckCircle } from 'lucide-react';
-import OrderForm from '../Orders/OrderForm';
-import OrdersTable from '../Orders/OrdersTable';
-import DashboardStats from '../Dashboard/DashboardStats';
+import React, { useState, useEffect } from "react";
+import { orderAPI, userAPI } from "../../services/api";
+import { ShoppingBag, Clock, CheckCircle } from "lucide-react";
+import OrderForm from "../Orders/OrderForm";
+import OrdersTable from "../Orders/OrdersTable";
+import DashboardStats from "../Dashboard/DashboardStats";
 
 interface CustomerDashboardProps {
   activeTab: string;
@@ -21,16 +21,16 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const statusFilter = activeTab === 'completed' ? 'completed' : 'all';
+      const statusFilter = activeTab === "completed" ? "completed" : "all";
       const [ordersData, statsData] = await Promise.all([
         orderAPI.getOrders({ status: statusFilter }),
-        userAPI.getDashboardStats()
+        userAPI.getDashboardStats(),
       ]);
 
       setOrders(ordersData.orders);
       setStats(statsData.stats);
     } catch (error) {
-      console.error('Failed to fetch customer data:', error);
+      console.error("Failed to fetch customer data:", error);
     } finally {
       setLoading(false);
     }
@@ -42,7 +42,7 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
       fetchData(); // Refresh data
       return true;
     } catch (error) {
-      console.error('Failed to create order:', error);
+      console.error("Failed to create order:", error);
       return false;
     }
   };
@@ -50,46 +50,41 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
   const renderDashboard = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Customer Dashboard</h1>
-        <div className="text-sm text-gray-500">
-          Track your clothing orders
-        </div>
+        <h1 className="text-2xl font-bold text-gray-900">دشبورد مشتری</h1>
+        <div className="text-sm text-gray-500">سفارشات کالای تان را اینجا تعقیب کنید</div>
       </div>
 
-      <DashboardStats 
+      <DashboardStats
         stats={[
-          { 
-            title: 'Total Orders', 
-            value: stats.totalOrders || 0, 
-            icon: ShoppingBag, 
-            color: 'blue',
-            trend: '+3%'
+          {
+            title: "سفارشات مجموعی",
+            value: stats.totalOrders || 0,
+            icon: ShoppingBag,
+            color: "blue",
+            trend: ""
           },
-          { 
-            title: 'Pending Orders', 
-            value: stats.pendingOrders || 0, 
-            icon: Clock, 
-            color: 'amber',
-            trend: '+1'
+          {
+            title: "سفارشات در حال جریان",
+            value: stats.pendingOrders || 0,
+            icon: Clock,
+            color: "amber",
+            trend: "",
           },
-          { 
-            title: 'Completed Orders', 
-            value: stats.completedOrders || 0, 
-            icon: CheckCircle, 
-            color: 'green',
-            trend: '+2%'
-          }
+          {
+            title: "سفارشات تکمیل شده",
+            value: stats.completedOrders || 0,
+            icon: CheckCircle,
+            color: "green",
+            trend: "",
+          },
         ]}
       />
 
       <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Recent Orders</h2>
+          <h2 className="text-lg font-medium text-gray-900">سفارشات اخیر</h2>
         </div>
-        <OrdersTable 
-          orders={orders.slice(0, 5)} 
-          showActions={false}
-        />
+        <OrdersTable orders={orders.slice(0, 5)} showActions={false} />
       </div>
     </div>
   );
@@ -104,10 +99,7 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <OrderForm 
-          onSubmit={handleOrderCreate}
-          isVisitor={false}
-        />
+        <OrderForm onSubmit={handleOrderCreate} isVisitor={false} />
       </div>
     </div>
   );
@@ -122,17 +114,16 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        <OrdersTable 
-          orders={orders} 
-          showActions={false}
-        />
+        <OrdersTable orders={orders} showActions={false} />
       </div>
     </div>
   );
 
   const renderCompleted = () => {
-    const completedOrders = orders.filter((order: any) => order.status === 'completed');
-    
+    const completedOrders = orders.filter(
+      (order: any) => order.status === "completed"
+    );
+
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -143,10 +134,7 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
         </div>
 
         <div className="bg-white rounded-lg shadow">
-          <OrdersTable 
-            orders={completedOrders} 
-            showActions={false}
-          />
+          <OrdersTable orders={completedOrders} showActions={false} />
         </div>
       </div>
     );
@@ -161,13 +149,13 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
   }
 
   switch (activeTab) {
-    case 'dashboard':
+    case "dashboard":
       return renderDashboard();
-    case 'place-order':
+    case "place-order":
       return renderPlaceOrder();
-    case 'my-orders':
+    case "my-orders":
       return renderMyOrders();
-    case 'completed':
+    case "completed":
       return renderCompleted();
     default:
       return renderDashboard();

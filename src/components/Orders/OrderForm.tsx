@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Plus, X } from 'lucide-react';
 
 interface OrderFormProps {
   customers?: Array<{ _id: string; name: string; email: string }>;

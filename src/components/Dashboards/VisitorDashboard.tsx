@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { orderAPI, userAPI } from '../../services/api';
-import { Plus, DollarSign, ShoppingBag, TrendingUp } from 'lucide-react';
-import OrderForm from '../Orders/OrderForm';
-import OrdersTable from '../Orders/OrdersTable';
-import DashboardStats from '../Dashboard/DashboardStats';
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useState, useEffect } from "react";
+import { orderAPI, userAPI } from "../../services/api";
+import { Plus, DollarSign, ShoppingBag, TrendingUp } from "lucide-react";
+import OrderForm from "../Orders/OrderForm";
+import OrdersTable from "../Orders/OrdersTable";
+import DashboardStats from "../Dashboard/DashboardStats";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface VisitorDashboardProps {
   activeTab: string;
@@ -27,14 +27,14 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
       const [ordersData, customersData, statsData] = await Promise.all([
         orderAPI.getOrders(),
         userAPI.getCustomers(),
-        userAPI.getDashboardStats()
+        userAPI.getDashboardStats(),
       ]);
 
       setOrders(ordersData.orders);
       setCustomers(customersData.customers);
       setStats(statsData.stats);
     } catch (error) {
-      console.error('Failed to fetch visitor data:', error);
+      console.error("Failed to fetch visitor data:", error);
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
       fetchData(); // Refresh data
       return true;
     } catch (error) {
-      console.error('Failed to create order:', error);
+      console.error("Failed to create order:", error);
       return false;
     }
   };
@@ -54,53 +54,50 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
   const renderDashboard = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Visitor Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">دشبورد بازدیدکننده</h1>
         <div className="text-sm text-gray-500">
-          Commission Rate: {user?.commissionRate}%
+          فیصدی: {user?.commissionRate} فیصد
         </div>
       </div>
 
-      <DashboardStats 
+      <DashboardStats
         stats={[
-          { 
-            title: 'Total Orders', 
-            value: stats.totalOrders || 0, 
-            icon: ShoppingBag, 
-            color: 'blue',
-            trend: '+5%'
+          {
+            title: "سفارشات مجموعی",
+            value: stats.totalOrders || 0,
+            icon: ShoppingBag,
+            color: "blue",
+            trend: "",
           },
-          { 
-            title: 'Completed Orders', 
-            value: stats.completedOrders || 0, 
-            icon: TrendingUp, 
-            color: 'green',
-            trend: '+8%'
+          {
+            title: "سفارشات تکمیل شده",
+            value: stats.completedOrders || 0,
+            icon: TrendingUp,
+            color: "green",
+            trend: "",
           },
-          { 
-            title: 'Total Commission', 
-            value: `$${(stats.totalCommission || 0).toFixed(2)}`, 
-            icon: DollarSign, 
-            color: 'emerald',
-            trend: '+15%'
+          {
+            title: "فیصدی مجموعی",
+            value: `$${(stats.totalCommission || 0).toFixed(2)}`,
+            icon: DollarSign,
+            color: "emerald",
+            trend: "",
           },
-          { 
-            title: 'Active Customers', 
-            value: customers.length, 
-            icon: Plus, 
-            color: 'purple',
-            trend: '+2'
-          }
+          {
+            title: "مشتریان فعال",
+            value: customers.length,
+            icon: Plus,
+            color: "purple",
+            trend: "",
+          },
         ]}
       />
 
       <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Recent Orders</h2>
+          <h2 className="text-lg font-medium text-gray-900">سفارشات اخیر</h2>
         </div>
-        <OrdersTable 
-          orders={orders.slice(0, 5)} 
-          showActions={false}
-        />
+        <OrdersTable orders={orders.slice(0, 5)} showActions={false} />
       </div>
     </div>
   );
@@ -108,14 +105,14 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
   const renderCreateOrder = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Create New Order</h1>
+        <h1 className="text-2xl font-bold text-gray-900">ایجاد سفارش جدید</h1>
         <div className="text-sm text-gray-500">
-          Create orders for customers
+          یک سفارش جدید برای مشتری ایجاد کنید
         </div>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <OrderForm 
+        <OrderForm
           customers={customers}
           onSubmit={handleOrderCreate}
           isVisitor={true}
@@ -127,30 +124,29 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
   const renderMyOrders = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">My Orders</h1>
+        <h1 className="text-2xl font-bold text-gray-900">سفارشات من</h1>
         <div className="text-sm text-gray-500">
-          Total: {orders.length} orders
+          سفارشات مجموعی: {orders.length} سفارش
         </div>
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        <OrdersTable 
-          orders={orders} 
-          showActions={false}
-        />
+        <OrdersTable orders={orders} showActions={false} />
       </div>
     </div>
   );
 
   const renderCommissions = () => {
-    const completedOrders = orders.filter((order: any) => order.status === 'completed');
-    
+    const completedOrders = orders.filter(
+      (order: any) => order.status === "completed"
+    );
+
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Commission Summary</h1>
+          <h1 className="text-2xl font-bold text-gray-900">خلاصه فیصدی</h1>
           <div className="text-sm text-gray-500">
-            Rate: {user?.commissionRate}%
+            فیصدی:‌ {user?.commissionRate}%
           </div>
         </div>
 
@@ -161,7 +157,9 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
                 <DollarSign className="h-6 w-6 text-green-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Commission</p>
+                <p className="text-sm font-medium text-gray-600">
+                  فیصدی مجموعی
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
                   ${(stats.totalCommission || 0).toFixed(2)}
                 </p>
@@ -175,8 +173,12 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
                 <ShoppingBag className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Completed Orders</p>
-                <p className="text-2xl font-bold text-gray-900">{completedOrders.length}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  سفارشات تکمیل شده
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {completedOrders.length}
+                </p>
               </div>
             </div>
           </div>
@@ -187,9 +189,14 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
                 <TrendingUp className="h-6 w-6 text-purple-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Average Commission</p>
+                <p className="text-sm font-medium text-gray-600">اوسط فیصدی</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ${completedOrders.length ? ((stats.totalCommission || 0) / completedOrders.length).toFixed(2) : '0.00'}
+                  $
+                  {completedOrders.length
+                    ? (
+                        (stats.totalCommission || 0) / completedOrders.length
+                      ).toFixed(2)
+                    : "0.00"}
                 </p>
               </div>
             </div>
@@ -198,26 +205,26 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
 
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Commission Breakdown</h2>
+            <h2 className="text-lg font-medium text-gray-900">تفکیک فیصدی</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order
+                    سفارش
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Customer
+                    مشتری
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order Value
+                    قیمت سفارش
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Commission
+                    فیصدی
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
+                    تاریخ
                   </th>
                 </tr>
               </thead>
@@ -230,19 +237,29 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{order.customerId?.name}</div>
+                      <div className="text-sm text-gray-900">
+                        {order.customerId?.name}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">${order.price}</div>
+                      <div className="text-sm text-gray-900">
+                        ${order.price}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-green-600">
-                        ${(order.price * ((user?.commissionRate || 0) / 100)).toFixed(2)}
+                        $
+                        {(
+                          order.price *
+                          ((user?.commissionRate || 0) / 100)
+                        ).toFixed(2)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-500">
-                        {new Date(order.completedAt || order.updatedAt).toLocaleDateString()}
+                        {new Date(
+                          order.completedAt || order.updatedAt
+                        ).toLocaleDateString()}
                       </div>
                     </td>
                   </tr>
@@ -264,13 +281,13 @@ const VisitorDashboard: React.FC<VisitorDashboardProps> = ({ activeTab }) => {
   }
 
   switch (activeTab) {
-    case 'dashboard':
+    case "dashboard":
       return renderDashboard();
-    case 'create-order':
+    case "create-order":
       return renderCreateOrder();
-    case 'my-orders':
+    case "my-orders":
       return renderMyOrders();
-    case 'commissions':
+    case "commissions":
       return renderCommissions();
     default:
       return renderDashboard();

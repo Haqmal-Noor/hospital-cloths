@@ -5,6 +5,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 
 import {
@@ -15,7 +16,11 @@ import {
   BarChart3,
   Clock,
   CheckCircle,
+  Settings,
+  User,
 } from "lucide-react";
+
+import ConfirmLogout from "./ConfirmLogout";
 
 interface AppSidebarProps {
   activeTab: string;
@@ -33,6 +38,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
           { id: "pending-orders", label: "سفارشات در انتظار", icon: Clock },
           { id: "tailors", label: "خیاطان", icon: Scissors },
           { id: "analytics", label: "تحلیل‌ها", icon: BarChart3 },
+          { id: "setting", label: "تنظیمات", icon: Settings },
+          { id: "profile", label: "پروفایل من", icon: User },
         ];
       case "visitor":
         return [
@@ -40,6 +47,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
           { id: "create-order", label: "ایجاد سفارش", icon: Plus },
           { id: "my-orders", label: "سفارشات من", icon: ShoppingBag },
           { id: "commissions", label: "کمیسیون‌ها", icon: BarChart3 },
+          { id: "setting", label: "تنظیمات", icon: Settings },
+          { id: "profile", label: "پروفایل من", icon: User },
         ];
       case "customer":
         return [
@@ -47,6 +56,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
           { id: "place-order", label: "ثبت سفارش", icon: Plus },
           { id: "my-orders", label: "سفارشات من", icon: ShoppingBag },
           { id: "completed", label: "تکمیل‌شده", icon: CheckCircle },
+          { id: "setting", label: "تنظیمات", icon: Settings },
+          { id: "profile", label: "پروفایل من", icon: User },
         ];
       case "tailor":
         return [
@@ -58,6 +69,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
           },
           { id: "in-progress", label: "در حال اجرا", icon: Clock },
           { id: "completed", label: "تکمیل‌شده", icon: CheckCircle },
+          { id: "setting", label: "تنظیمات", icon: Settings },
+          { id: "profile", label: "پروفایل من", icon: User },
         ];
       default:
         return [];
@@ -90,6 +103,8 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
         </h2>
       </SidebarHeader>
 
+      <SidebarSeparator></SidebarSeparator>
+
       <SidebarContent>
         {/* If you want to group items, you can split them into SidebarGroup components */}
         <SidebarGroup>
@@ -99,7 +114,7 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
               onClick={() => setActiveTab(id)}
               className={`w-full flex gap-2 items-center space-x-3 px-4 py-3 rounded-sm text-sm transition-colors duration-150 ${
                 activeTab === id
-                  ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
+                  ? "bg-blue-100 hover:bg-blue-200 transition text-blue-600 border-r-2 border-blue-600"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
@@ -112,7 +127,16 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
         {/* You can add more SidebarGroup components here if needed */}
       </SidebarContent>
 
-      <SidebarFooter>{/* Optional footer content */}</SidebarFooter>
+      <SidebarFooter>
+        {/* <button
+          onClick={logout}
+          className="flex justify-center items-center gap-2 px-4 py-2 bg-red-300 font-bold text-red-700 rounded-sm text-sm shadow-sm hover:bg-red-400 transition duration-200"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </button> */}
+        <ConfirmLogout />
+      </SidebarFooter>
     </Sidebar>
   );
 }

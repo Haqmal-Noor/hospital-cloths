@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { orderAPI, userAPI } from "../../services/api";
-import {
-  Users,
-  ShoppingBag,
-  Clock,
-  CheckCircle,
-  TrendingUp,
-} from "lucide-react";
+import { orderAPI, statsAPI, userAPI } from "../../services/api";
+import { Users, ShoppingBag, Clock, CheckCircle } from "lucide-react";
 import OrdersTable from "../Orders/OrdersTable";
 import DashboardStats from "../Dashboard/DashboardStats";
+
+import OrdersOverTimeChart from "../Admin/OrdersOverTimeChart";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import OrderStatusSummary from "../Admin/OrdersStatusSummary";
+
+const intervarls = {
+  day: "حساب به اساس روز",
+  week: "حساب به اساس هفته",
+  month: "حساب به اساس ماه",
+};
 
 interface AdminDashboardProps {
   activeTab: string;
@@ -16,8 +27,10 @@ interface AdminDashboardProps {
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
   const [orders, setOrders] = useState([]);
+  const [ordersSummary, setOrdersSummary] = useState({});
   const [tailors, setTailors] = useState([]);
   const [stats, setStats] = useState({});
+  const [intervalTime, setIntervalTime] = useState("day");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,18 +40,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [ordersData, tailorsData, statsData] = await Promise.all([
-        orderAPI.getOrders({
-          status: activeTab === "pending-orders" ? "pending" : "all",
-          limit: 20,
-        }),
-        userAPI.getTailors(),
-        userAPI.getDashboardStats(),
-      ]);
+      const [ordersData, tailorsData, statsData, orderSummary] =
+        await Promise.all([
+          orderAPI.getOrders({
+            status: activeTab === "pending-orders" ? "pending" : "all",
+            limit: 20,
+          }),
+          userAPI.getTailors(),
+          userAPI.getDashboardStats(),
+          statsAPI.getOrderStatusSummary(),
+        ]);
 
       setOrders(ordersData.orders);
       setTailors(tailorsData.tailors);
       setStats(statsData.stats);
+      setOrdersSummary(orderSummary);
     } catch (error) {
       console.error("Failed to fetch admin data:", error);
     } finally {
@@ -56,58 +72,78 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
   };
 
   const renderDashboard = () => (
-    <div className="space-y-6">
+    <div className="space-y-9">
       <div className="hidden lg:flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">دشبورد مدیر</h1>
         <div className="text-sm text-gray-500">
-          Welcome to the admin control panel
+          تمام عملیات مربوط مدیر را از اینجا اداره کنید
         </div>
       </div>
-
       <DashboardStats
         stats={[
           {
-            title: "Total Orders",
+            title: "سفارشات مجموعی",
             value: stats.totalOrders || 0,
             icon: ShoppingBag,
             color: "blue",
-            trend: "+12%",
+            trend: "",
           },
           {
-            title: "Pending Orders",
+            title: "سفارشات در حال انتظار",
             value: stats.pendingOrders || 0,
             icon: Clock,
             color: "amber",
-            trend: "+3%",
+            trend: "",
           },
           {
-            title: "Completed Orders",
+            title: "سفارشات تکمیل شده",
             value: stats.completedOrders || 0,
             icon: CheckCircle,
             color: "green",
-            trend: "+8%",
+            trend: "",
           },
           {
-            title: "Active Tailors",
+            title: "خیاطان فعال",
             value: stats.totalTailors || 0,
             icon: Users,
             color: "purple",
-            trend: "+2",
+            trend: "",
           },
         ]}
       />
-
-      {/* <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Recent Orders</h2>
+      <Select value={intervalTime} onValueChange={setIntervalTime}>
+        <SelectTrigger className="w-[200px]">
+          <SelectValue placeholder="Select a value" />
+        </SelectTrigger>
+        <SelectContent>
+          {Object.entries(intervarls).map(([interval, message]) => (
+            <SelectItem key={interval} value={interval}>
+              {message}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex-1">
+          <OrdersOverTimeChart intervalTime={intervalTime} />
         </div>
-        <OrdersTable 
-          orders={orders.slice(0, 5)} 
+
+        <div className="flex-1">
+          <OrderStatusSummary data={ordersSummary} />
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-medium text-gray-900">سفارشات اخیر</h2>
+        </div>
+        <OrdersTable
+          orders={orders.slice(0, 5)}
           tailors={tailors}
           onAssignTailor={handleAssignTailor}
           showActions={true}
         />
-      </div> */}
+      </div>
     </div>
   );
 
@@ -136,7 +172,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900"></h1>
         <div className="text-sm text-gray-500">
-          {orders.length} orders awaiting assignment
+          سفارش باید اختصاص یافته شود: {orders.length}
         </div>
       </div>
 
@@ -154,16 +190,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
   const renderTailors = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Tailors Management</h1>
-        <div className="text-sm text-gray-500">
-          {tailors.length} active tailors
-        </div>
+        <h1 className="text-2xl font-bold text-gray-900">مدریت خیاطان</h1>
+        <div className="text-sm text-gray-500">خیاط فعال: {tailors.length}</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tailors.map((tailor: any) => (
           <div key={tailor._id} className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-3 space-x-4">
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                 <Users className="h-6 w-6 text-purple-600" />
               </div>
@@ -186,7 +220,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ activeTab }) => {
   const renderAnalytics = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+        <h1 className="text-2xl font-bold text-gray-900">تحلیل‌ها</h1>
         <div className="text-sm text-gray-500">
           Business insights and metrics
         </div>

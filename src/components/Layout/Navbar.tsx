@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
           <div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center space-x-2 px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 transition">
+                <button className="flex items-center space-x-2 px-3 py-2 rounded-md bg-blue-100 hover:bg-blue-200 transition">
                   {/* <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(
                       user.role
@@ -57,11 +57,11 @@ const Navbar: React.FC = () => {
 
               <DropdownMenuContent
                 align="end"
-                className="bg-white rounded-md shadow-lg w-48 py-1"
+                className="bg-white ms-3 rounded-md shadow-lg w-48 py-1"
               >
                 <DropdownMenuItem className="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 cursor-pointer">
                   <User className="h-4 w-4 text-gray-600" />
-                  <span>{user.name}</span>
+                  <span>My Profile</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem className="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 cursor-pointer">
