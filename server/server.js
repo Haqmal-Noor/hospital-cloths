@@ -8,6 +8,8 @@ import authRoutes from "./routes/auth.js";
 import orderRoutes from "./routes/orders.js";
 import userRoutes from "./routes/users.js";
 import statsRoutes from "./routes/stats.js";
+import personRoutes from "./routes/personRoutes.js";
+
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 
@@ -37,11 +39,15 @@ app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/customer/people", personRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
 });
+
+// const frontendPath = path.join(__dirname, "../dist"); // adjust if dist is elsewhere
+// app.use(express.static(frontendPath));
 
 // Error handling middleware
 app.all("*", (req, res, next) => {
