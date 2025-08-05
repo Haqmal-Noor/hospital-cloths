@@ -8,7 +8,7 @@ import authRoutes from "./routes/auth.js";
 import orderRoutes from "./routes/orders.js";
 import userRoutes from "./routes/users.js";
 import statsRoutes from "./routes/stats.js";
-import personRoutes from "./routes/personRoutes.js";
+import personRoutes from "./routes/staff.js";
 
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
@@ -39,7 +39,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/stats", statsRoutes);
-app.use("/api/customer/people", personRoutes);
+app.use("/api/customers/people", personRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

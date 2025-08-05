@@ -89,6 +89,17 @@ export const statsAPI = {
   },
 };
 
+export const employeesAPI = {
+  getAllEmployees: async () => {
+    const response = await axios.get("/customers/people");
+    return response.data;
+  },
+  createEmployee: async (employeeData: any) => {
+    const response = await axios.post("/customers/people", employeeData);
+    return response.data;
+  },
+};
+
 // Set up axios defaults
 axios.defaults.baseURL = API_URL;
 

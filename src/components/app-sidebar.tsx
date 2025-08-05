@@ -18,6 +18,7 @@ import {
   CheckCircle,
   Settings,
   User,
+  Briefcase,
 } from "lucide-react";
 
 import ConfirmLogout from "./ConfirmLogout";
@@ -35,6 +36,7 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
         return [
           { id: "dashboard", label: "داشبورد", icon: LayoutDashboard },
           { id: "all-orders", label: "تمام سفارشات", icon: ShoppingBag },
+          { id: "manage-emp", label: "مدریت کارمندان", icon: Briefcase },
           { id: "pending-orders", label: "سفارشات در انتظار", icon: Clock },
           { id: "tailors", label: "خیاطان", icon: Scissors },
           { id: "analytics", label: "تحلیل‌ها", icon: BarChart3 },
@@ -53,6 +55,7 @@ export function AppSidebar({ activeTab, setActiveTab }: AppSidebarProps) {
       case "customer":
         return [
           { id: "dashboard", label: "داشبورد", icon: LayoutDashboard },
+          { id: "manage-emp", label: "مدریت کارمندان", icon: Briefcase },
           { id: "place-order", label: "ثبت سفارش", icon: Plus },
           { id: "my-orders", label: "سفارشات من", icon: ShoppingBag },
           { id: "completed", label: "تکمیل‌شده", icon: CheckCircle },

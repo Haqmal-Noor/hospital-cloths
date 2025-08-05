@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { orderAPI, userAPI } from "../../services/api";
-import { ShoppingBag, Clock, CheckCircle } from "lucide-react";
+import { employeesAPI, orderAPI, userAPI } from "../../services/api";
+import { ShoppingBag, Clock, CheckCircle, Plus } from "lucide-react";
 import OrderForm from "../Orders/OrderForm";
 import OrdersTable from "../Orders/OrdersTable";
 import DashboardStats from "../Dashboard/DashboardStats";
+import EmployeesTable from "../Orders/EmployeesTable";
+import AddEmployee from "../Customer/AddEmployee";
 
 interface CustomerDashboardProps {
   activeTab: string;
@@ -11,8 +13,36 @@ interface CustomerDashboardProps {
 
 const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
   const [orders, setOrders] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    gender: "",
+    age: "",
+    phone: "",
+    department: "",
+    role: "",
+    employmentStatus: "",
+    measurements: {
+      chest: "",
+      waist: "",
+      hip: "",
+      inseam: "",
+      sleeveLength: "",
+      shoulderWidth: "",
+      neck: "",
+      height: "",
+      weight: "",
+      armLength: "",
+      thigh: "",
+      claf: "",
+      wrist: "",
+      ankle: "",
+    },
+    notes: "",
+  });
 
   useEffect(() => {
     fetchData();
@@ -22,13 +52,15 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
     setLoading(true);
     try {
       const statusFilter = activeTab === "completed" ? "completed" : "all";
-      const [ordersData, statsData] = await Promise.all([
+      const [ordersData, statsData, employeesData] = await Promise.all([
         orderAPI.getOrders({ status: statusFilter }),
         userAPI.getDashboardStats(),
+        employeesAPI.getAllEmployees(),
       ]);
 
       setOrders(ordersData.orders);
       setStats(statsData.stats);
+      setEmployees(employeesData);
     } catch (error) {
       console.error("Failed to fetch customer data:", error);
     } finally {
@@ -47,11 +79,27 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
     }
   };
 
+  const handleEmployeeCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await employeesAPI.createEmployee(formData);
+    } catch (error) {
+      console.error("Failed to fetch customer data:", error);
+    } finally {
+      setLoading(false);
+    }
+    fetchData(); // Refresh data
+    setOpen(false);
+  };
+
   const renderDashboard = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">دشبورد مشتری</h1>
-        <div className="text-sm text-gray-500">سفارشات کالای تان را اینجا تعقیب کنید</div>
+        <div className="text-sm text-gray-500">
+          سفارشات کالای تان را اینجا تعقیب کنید
+        </div>
       </div>
 
       <DashboardStats
@@ -61,7 +109,7 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
             value: stats.totalOrders || 0,
             icon: ShoppingBag,
             color: "blue",
-            trend: ""
+            trend: "",
           },
           {
             title: "سفارشات در حال جریان",
@@ -88,6 +136,29 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
       </div>
     </div>
   );
+
+  const renderManageEmployees = () => {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">مدریت مشخصات کارمندان</h1>
+          <AddEmployee
+            formData={formData}
+            setFormData={setFormData}
+            loading={loading}
+            onCreateEmployee={handleEmployeeCreate}
+            open={open}
+            setOpen={setOpen}
+          />
+        </div>
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <EmployeesTable staffList={employees} />
+        </div>
+      </div>
+    );
+  };
 
   const renderPlaceOrder = () => (
     <div className="space-y-6">
@@ -155,6 +226,8 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
       return renderPlaceOrder();
     case "my-orders":
       return renderMyOrders();
+    case "manage-emp":
+      return renderManageEmployees();
     case "completed":
       return renderCompleted();
     default:
