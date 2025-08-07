@@ -98,6 +98,21 @@ export const employeesAPI = {
     const response = await axios.post("/customers/people", employeeData);
     return response.data;
   },
+  deleteEmployee: async (employeeId: string) => {
+    const response = await axios.delete(`/customers/people/${employeeId}`);
+    return response.data;
+  },
+  fetchEmployeeData: async (id: string) => {
+    const response = await axios.get(`/customers/people/${id}`);
+    return response.data;
+  },
+  updateEmployee: async (employeeId: string, formData: any) => {
+    const response = await axios.put(
+      `/customers/people/${employeeId}`,
+      formData
+    );
+    return response.data;
+  },
 };
 
 // Set up axios defaults

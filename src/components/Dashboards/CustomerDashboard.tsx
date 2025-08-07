@@ -4,7 +4,7 @@ import { ShoppingBag, Clock, CheckCircle, Plus } from "lucide-react";
 import OrderForm from "../Orders/OrderForm";
 import OrdersTable from "../Orders/OrdersTable";
 import DashboardStats from "../Dashboard/DashboardStats";
-import EmployeesTable from "../Orders/EmployeesTable";
+import EmployeesTable from "../Customer/EmployeesTable";
 import AddEmployee from "../Customer/AddEmployee";
 
 interface CustomerDashboardProps {
@@ -24,7 +24,6 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
     phone: "",
     department: "",
     role: "",
-    employmentStatus: "",
     measurements: {
       chest: "",
       waist: "",
@@ -152,9 +151,8 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ activeTab }) => {
             setOpen={setOpen}
           />
         </div>
-        {/* Table */}
         <div className="overflow-x-auto">
-          <EmployeesTable staffList={employees} />
+          <EmployeesTable fetchData={fetchData} staffList={employees} />
         </div>
       </div>
     );

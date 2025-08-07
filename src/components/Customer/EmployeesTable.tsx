@@ -1,12 +1,8 @@
 import { useState } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  Eye,
-  AlertCircle,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, Eye, AlertCircle, Edit } from "lucide-react";
+
+import ConfirmDelete from "./ConfirmDelete";
+import EditEmployee from "./EditEmployee";
 
 import {
   Table,
@@ -17,6 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "../ui/button";
+import { employeesAPI } from "@/services/api";
+import EmployeeDetails from "./EmployeeDetails";
 
 interface Staff {
   _id: string;
@@ -49,15 +47,15 @@ interface Staff {
 
 interface EmployeesTableProps {
   staffList: Staff[];
-  onView?: (staffId: string) => void;
+  fetchData?: () => void;
 }
 
 const EmployeesTable: React.FC<EmployeesTableProps> = ({
   staffList,
-  onView,
+  fetchData,
 }) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  console.log(staffList);
+
   const toggleRowExpansion = (staffId: string) => {
     const updated = new Set(expandedRows);
     if (updated.has(staffId)) {
@@ -96,6 +94,17 @@ const EmployeesTable: React.FC<EmployeesTableProps> = ({
         {status === "active" ? "کارمند فعال" : "کارمند غیر فعال"}
       </span>
     );
+  };
+
+  const handleEmployeeDelete = async (id: string) => {
+    try {
+      const response = await employeesAPI.deleteEmployee(id);
+      if (response.success) {
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
   };
 
   return (
@@ -142,27 +151,9 @@ const EmployeesTable: React.FC<EmployeesTableProps> = ({
                 {new Date(staff.createdAt).toLocaleDateString("fa-IR")}
               </TableCell>
               <TableCell className="text-center">
-                <Button
-                  onClick={() => onView?.(staff._id)}
-                  variant="ghost"
-                  size="icon"
-                >
-                  <Eye className="h-4 w-4 text-indigo-600" />
-                </Button>
-                <Button
-                  onClick={() => onView?.(staff._id)}
-                  variant="ghost"
-                  size="icon"
-                >
-                  <Edit className="h-4 w-4 text-purple-500" />
-                </Button>
-                <Button
-                  onClick={() => onView?.(staff._id)}
-                  variant="ghost"
-                  size="icon"
-                >
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
+                <EmployeeDetails employeeId={staff._id} />
+                <EditEmployee id={staff._id} fetchData={fetchData} />
+                <ConfirmDelete id={staff._id} onDelete={handleEmployeeDelete} />
               </TableCell>
             </TableRow>
           ))}
@@ -180,11 +171,9 @@ const EmployeesTable: React.FC<EmployeesTableProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-medium text-gray-900">
-                    {staff.first_name} {staff.last_name}
+                    {staff.name}
                   </h3>
-                  <p className="text-xs text-gray-500">
-                    شناسه: {staff.staff_id}
-                  </p>
+                  <p className="text-xs text-gray-500">شناسه: {staff._id}</p>
                 </div>
                 <button
                   onClick={() => toggleRowExpansion(staff._id)}
@@ -206,11 +195,13 @@ const EmployeesTable: React.FC<EmployeesTableProps> = ({
                   <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">
                     جنسیت
                   </p>
-                  <p className="font-medium text-gray-900">{staff.gender}</p>
+                  <p className="font-medium text-gray-900">
+                    {staff.gender === "male" ? "مرد" : "زن"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">
-                    موقعیت شغلی
+                    نقش
                   </p>
                   <p className="font-medium text-gray-900">{staff.role}</p>
                 </div>
@@ -225,24 +216,6 @@ const EmployeesTable: React.FC<EmployeesTableProps> = ({
                     </p>
                     <p className="text-sm text-gray-900">{staff.department}</p>
                   </div>
-                  {staff.work_location && (
-                    <div>
-                      <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">
-                        محل کار
-                      </p>
-                      <p className="text-sm text-gray-900">
-                        {staff.work_location}
-                      </p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">
-                      وضعیت استخدام
-                    </p>
-                    <p className="text-sm text-gray-900">
-                      {staff.employment_status}
-                    </p>
-                  </div>
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">
                       تاریخ ثبت
@@ -255,13 +228,10 @@ const EmployeesTable: React.FC<EmployeesTableProps> = ({
               )}
 
               {/* Actions */}
-              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
-                <button
-                  onClick={() => onView?.(staff._id)}
-                  className="text-indigo-600 hover:text-indigo-900 p-2 rounded border border-indigo-200 hover:bg-indigo-50 transition-colors"
-                >
-                  <Eye className="h-4 w-4" />
-                </button>
+              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-2">
+                <EmployeeDetails employeeId={staff._id} />
+                <EditEmployee id={staff._id} fetchData={fetchData} />
+                <ConfirmDelete id={staff._id} onDelete={handleEmployeeDelete} />
               </div>
             </div>
           </div>

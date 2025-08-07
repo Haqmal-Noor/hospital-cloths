@@ -58,7 +58,9 @@ export const deleteStaff = async (req, res) => {
   try {
     const deleted = await Staff.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ error: "Staff not found" });
-    res.json({ message: "Staff deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Staff deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
